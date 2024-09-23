@@ -1,0 +1,22 @@
+{
+	"name": "aelia/wc-aelia-eu-vat-assistant",
+	"require": {
+		"econea/nusoap": "0.9.7"
+	},
+	"require-dev": {
+		"mockery/mockery": "^1.3"
+  },
+	"autoload" : {
+		"classmap": ["lib/"]
+	},
+	"scripts": {
+		"post-update-cmd": [
+			"npm install --prefix js/frontend/checkout",
+			"npm run build --prefix js/frontend/checkout"
+		],
+		"post-install-cmd": [
+			"npm install  --prefix js/frontend/checkout",
+			"npm run build --prefix js/frontend/checkout"
+		]
+	}
+}
