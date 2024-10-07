@@ -493,7 +493,12 @@ if(!function_exists('aelia_get_task_scheduler')) {
 	 */
 	function aelia_get_task_scheduler():  Aelia\WC\AFC\Scheduler\Task_Scheduler {
 		if(!did_action('aelia_task_scheduler_initialized')) {
-			wc_doing_it_wrong(__FUNCTION__, __('The Aelia Task Scheduler is not avaialble before aelia_task_scheduler_initialized action.', Definitions::TEXT_DOMAIN), '2.4.8.230524');
+			// Safeguard in case some improperly designed element/plugin triggers a call to this
+			// function before the woocommerce_init event
+			// @since 2.4.23.240205
+			if(function_exists('wc_doing_it_wrong')) {
+				wc_doing_it_wrong(__FUNCTION__, __('The Aelia Task Scheduler is not avaialble before aelia_task_scheduler_initialized action.', Definitions::TEXT_DOMAIN), '2.4.8.230524');
+			}
 		}
 		return \Aelia\WC\AFC\Scheduler\Task_Scheduler::instance();
 	}

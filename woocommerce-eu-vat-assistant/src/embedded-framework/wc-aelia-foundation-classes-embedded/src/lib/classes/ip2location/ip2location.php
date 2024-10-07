@@ -2,7 +2,9 @@
 namespace Aelia\WC;
 if(!defined('ABSPATH')) { exit; } // Exit if accessed directly
 
+use Exception;
 use GeoIp2\Database\Reader;
+use WP_Error;
 
 /**
  * Handles the retrieval of Geolocation information from an IP Address.
@@ -13,10 +15,15 @@ class IP2Location extends Base_Class {
 	// @var Reder The instance of the MaxMind database reader.
 	protected $_db_reader;
 
-	// New temporary URL to serve the GeoIP database, to deal with the changes introduced by MaxMind
-	// @since 2.0.10.191231
-	// @link https://blog.maxmind.com/2019/12/18/significant-changes-to-accessing-and-using-geolite2-databases/
-	const GEOLITE_DB = 'https://geoip.aelia.co/Geolite2-City.mmdb.gz';
+	/**
+	 * The name of the MaxMind database to utilize.
+	 */
+	const DATABASE = 'GeoLite2-City';
+
+	/**
+	 * The extension for the MaxMind database.
+	 */
+	const DATABASE_EXTENSION = '.mmdb';
 
 	public static $geoip_db_file = 'GeoLite2-City.mmdb';
 
@@ -71,44 +78,23 @@ class IP2Location extends Base_Class {
 	 *
 	 * @since 1.6.0.150724
 	 */
-	public static function install_database() {
+	public static function install_database(string $license_key) {
 		// Allow 3rd parties to alter the result of the "GeoIP database exist" check
 		// @since 2.0.8.190822
 		// @link https://aelia.freshdesk.com/a/tickets/23407
 		if(!apply_filters('wc_aelia_geoip_database_exists', file_exists(self::geoip_db_file()), self::geoip_db_file())) {
 			// Download and install the latest GeoIP database
-			$result = self::update_database();
+			$result = self::update_database($license_key);
 
-			if(!$result) {
-				Messages::admin_message(
-					__('Could not download and install the GeoIP database.', WC_AeliaFoundationClasses::$text_domain) .
-					'&nbsp;' .
-					sprintf(__('Please %s.', WC_AeliaFoundationClasses::$text_domain),
-									self::get_geoip_install_html(__('try to install the database again',
-																									 WC_AeliaFoundationClasses::$text_domain))) .
-					'&nbsp;' .
-					sprintf(__('If the error persists, please download the the database ' .
-										 'manually, from <a href="%1$s">the MaxMind website</a> (you will need to create a free account on their site). Extract file ' .
-										 '<strong>%2$s</strong> from the archive and copy it to ' .
-										 '<code>%3$s</code>.',
-										 WC_AeliaFoundationClasses::$text_domain),
-									'https://dev.maxmind.com/geoip/geoip2/geolite2/',
-									IP2Location::$geoip_db_file,
-									dirname(IP2Location::geoip_db_file())) .
-					'&nbsp;' .
-					__('Geolocation will become available automatically, as soon as the ' .
-						 'GeoIP database is copied in the indicated folder.',
-						 WC_AeliaFoundationClasses::$text_domain) .
-					'&nbsp;<br /><br />' .
-					sprintf(__('For more information about this message, <a href="%s">please refer to our ' .
-										 'knowledge base</a>.',
-										 WC_AeliaFoundationClasses::$text_domain),
-								 'http://bit.ly/AFC_Geolocation'),
-					array(
-						'level' => E_USER_ERROR,
-						'code' => Definitions::ERR_COULD_NOT_UPDATE_GEOIP_DATABASE,
-					)
-				);
+			if(is_wp_error($result)) {
+				Messages::admin_message(wp_kses_post(implode(' ', [
+					__('Could not download and install the GeoIP database.', WC_AeliaFoundationClasses::$text_domain),
+					$result->get_error_message(),
+				])),
+				array(
+					'level' => E_USER_ERROR,
+					'code' => Definitions::ERR_COULD_NOT_UPDATE_GEOIP_DATABASE,
+				));
 			}
 		}
 		return true;
@@ -120,12 +106,9 @@ class IP2Location extends Base_Class {
 	 * @since 1.6.0.150724
 	 * @link https://wordpress.org/plugins/geoip-detect/
 	 */
-	public static function update_database() {
+	public static function update_database(string $license_key) {
+		$result = true;
 		$afc = WC_AeliaFoundationClasses::instance();
-		if(!is_callable('gzopen')) {
-			$afc->get_logger()->warning(__('Server does not support gzopen. The GeoIP database could not be updated.', WC_AeliaFoundationClasses::$text_domain));
-			return false;
-		}
 
 		// Set time limit to 5 minutes, if possible. Downloading the database can
 		// take some time
@@ -133,37 +116,132 @@ class IP2Location extends Base_Class {
 
 		require_once(ABSPATH . 'wp-admin/includes/file.php');
 
-		$result = false;
-		$tmp_database = download_url(self::GEOLITE_DB);
-		if(!is_wp_error($tmp_database)) {
-			$gzhandle = @gzopen($tmp_database, 'r');
-			$target_handle = @fopen(self::geoip_db_file(), 'w');
+		// Build the URL to download the GeoLite database from MaxMind
+		// @since 2.6.0.241007
+		$download_uri = add_query_arg(
+			array(
+				'edition_id' => static::DATABASE,
+				'license_key' => urlencode(wc_clean($license_key)),
+				'suffix' => 'tar.gz',
+			),
+			'https://download.maxmind.com/app/geoip_download'
+		);
 
-			if($gzhandle && $target_handle) {
-				while($string = gzread($gzhandle, 4096)) {
-					fwrite($target_handle, $string, strlen($string));
-				}
-				gzclose($gzhandle);
-				fclose($target_handle);
-				$result = true;
-			}
-			else {
-				$afc->get_logger()->error(__('Unable to open downloaded GeoIP database file. The GeoIP database could not be updated.', WC_AeliaFoundationClasses::$text_domain), array(
-					'GeoIP Database URL' => self::GEOLITE_DB,
-					'Temporary Downloaded File Path' => $tmp_database,
-					'Target File' => self::geoip_db_file(),
-				));
-				$result = false;
-			}
-			@unlink($tmp_database);
-		}
-		else {
+		// Needed for the download_url call right below.
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+
+		$tmp_archive_path = download_url(esc_url_raw($download_uri));
+		if(is_wp_error($tmp_archive_path)) {
 			$afc->get_logger()->error(__('Unable to download GeoIP Database.', WC_AeliaFoundationClasses::$text_domain), array(
-				'GeoIP Database URL' => self::GEOLITE_DB,
-				'Error Message' => $tmp_database->get_error_message(),
+				'GeoIP Database URL' => $download_uri,
+				'Error Message' => $tmp_archive_path->get_error_message(),
 			));
-			$result = false;
+
+			$error_data = $tmp_archive_path->get_error_data();
+
+			// Inform the administrator if the database could not be downloaded
+			// @since 2.6.0.241007
+			if(isset($error_data['code'])) {
+				switch($error_data['code']) {
+					// An error 401 indicates a missing authorisation
+					case 401:
+						$result = new WP_Error('wc_aelia_geolocation_database_license_key', wp_kses_post(implode(' ', [
+							__('The MaxMind license key is invalid.', WC_AeliaFoundationClasses::$text_domain),
+							sprintf(
+								__('Please go to <a href="%1$s">WooCommerce > Settings > Integration > MaxMind Geolocation</a> and enter your licence key.', WC_AeliaFoundationClasses::$text_domain),
+								admin_url('admin.php?page=wc-settings&tab=integration')
+							),
+							__('If you have recently created this key, you may need to wait for it to become active.', WC_AeliaFoundationClasses::$text_domain),
+						])));
+					break;
+					default:
+						$result = new WP_Error('wc_aelia_geolocation_database_generic_error', wp_kses_post(implode(' ', [
+							sprintf(__('Please %s.', WC_AeliaFoundationClasses::$text_domain), self::get_geoip_install_html(__('try to install the database again', ))),
+							sprintf(__('If the error persists, please download the the database ' .
+												 'manually, from <a href="%1$s">the MaxMind website</a> (you will need to create a free account on their site). Extract file ' .
+												 '<strong>%2$s</strong> from the archive and copy it to ' .
+												 '<code>%3$s</code>.',
+												 WC_AeliaFoundationClasses::$text_domain),
+											'https://dev.maxmind.com/geoip/geoip2/geolite2/',
+											IP2Location::$geoip_db_file,
+											dirname(IP2Location::geoip_db_file())),
+							__('Geolocation features will become available automatically, as soon as the GeoIP database is copied in the indicated folder.', WC_AeliaFoundationClasses::$text_domain),
+							sprintf(__('For more information about this message, <a href="%s">please refer to our knowledge base</a>.', WC_AeliaFoundationClasses::$text_domain), 'http://bit.ly/AFC_Geolocation'),
+						])));
+					break;
+				}
+			}
+
+			return $result;
 		}
+
+		// Extract the database from the downloaded archive
+		try {
+			$file = new \PharData($tmp_archive_path);
+
+			$tmp_database_path = trailingslashit(dirname($tmp_archive_path)) . trailingslashit($file->current()->getFilename()) . self::DATABASE . self::DATABASE_EXTENSION;
+
+			$file->extractTo(
+				dirname($tmp_archive_path),
+				trailingslashit($file->current()->getFilename()) . self::DATABASE . self::DATABASE_EXTENSION,
+				true
+			);
+		}
+		catch(Exception $exception) {
+			$afc->get_logger()->error(__('Unable to open downloaded GeoIP database file. The GeoIP database could not be updated.', WC_AeliaFoundationClasses::$text_domain), array(
+				'GeoIP Database URL' => $download_uri,
+				'Temporary Downloaded File Path' => $tmp_archive_path,
+				'Target File' => $geolocation_database_path,
+			));
+			return new WP_Error('wc_aelia_geolocation_database_archive_error', $exception->getMessage());
+		}
+		finally {
+			// Remove the archive since we only care about a single file in it.
+			unlink($tmp_archive_path);
+		}
+
+		if(!WP_Filesystem()) {
+			$error_msg = __('Failed to initialise WC_Filesystem API while trying to update the MaxMind Geolocation database.', WC_AeliaFoundationClasses::$text_domain);
+			$afc->get_logger()->warning($error_msg);
+			return new WP_Error('wc_aelia_geolocation_database_archive_extract_error', $error_msg);
+		}
+
+		global $wp_filesystem;
+		$target_database_path = self::geoip_db_file();
+
+		// Delete previous databases
+		if($wp_filesystem->exists($target_database_path)) {
+			$wp_filesystem->delete($target_database_path);
+		}
+
+		// Move the new database to the appropriate location
+		$wp_filesystem->move($tmp_database_path, $target_database_path, true);
+		$wp_filesystem->delete(dirname($tmp_database_path));
+
+		return $result;
+	}
+
+	/**
+	 * Deletes the geoip database.
+	 *
+	 * @since 2.6.0.241007
+	 */
+	public static function delete_database() {
+		$result = true;
+		if(!WP_Filesystem()) {
+			$error_msg = __('Failed to initialise WC_Filesystem API while trying to delete the MaxMind Geolocation database.', WC_AeliaFoundationClasses::$text_domain);
+			WC_AeliaFoundationClasses::instance()->get_logger()->warning($error_msg);
+			return new WP_Error('wc_aelia_geolocation_database_archive_delete_error', $error_msg);
+		}
+
+		global $wp_filesystem;
+		$target_database_path = self::geoip_db_file();
+
+		// Delete previous databases
+		if($wp_filesystem->exists($target_database_path)) {
+			$wp_filesystem->delete($target_database_path);
+		}
+
 		return $result;
 	}
 
@@ -208,17 +286,13 @@ class IP2Location extends Base_Class {
 					$this->_db_reader = new Reader(self::geoip_db_file());
 				}
 				else {
-					$this->log(sprintf('GeoIP database does not exist: "%s".',
-														 $geoip_db_file),
-										 false);
+					$this->logger->warning(sprintf('GeoIP database does not exist: "%s".', $geoip_db_file));
 
 					$this->_db_reader = false;
 				}
 			}
 			catch(Exception $e) {
-				$this->log(sprintf('Could not instantiate GeoIP Database Reader. Error: "%s".',
-													 $e->getMessage()),
-									 false);
+				$this->logger->warning(sprintf('Could not instantiate GeoIP Database Reader. Error: "%s".', $e->getMessage()));
 				$this->_db_reader = false;
 			}
 		}
@@ -304,9 +378,7 @@ class IP2Location extends Base_Class {
 				// Create the Reader object, which should be reused across lookups.
 				$reader = $this->get_db_reader();
 				if($reader === false) {
-					$this->log(__('Could not instantiate GeoIP DB Reader. Geolocation aborted.',
-												$this->text_domain),
-										 false);
+					$this->logger->warning(__('Could not instantiate GeoIP DB Reader. Geolocation aborted.', WC_AeliaFoundationClasses::$text_domain));
 					return false;
 				}
 				$city = $reader->city($ip_address);

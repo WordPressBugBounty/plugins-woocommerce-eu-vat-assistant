@@ -13,7 +13,7 @@ use Aelia\WC\AFC\Messages;
  * Aelia Foundation Classes for WooCommerce.
  **/
 class WC_AeliaFoundationClasses extends Aelia_Plugin {
-	public static $version = '2.4.22.240109';
+	public static $version = '2.6.0.241007';
 
 	public static $plugin_slug = Definitions::PLUGIN_SLUG;
 	public static $text_domain = Definitions::TEXT_DOMAIN;
@@ -90,7 +90,6 @@ class WC_AeliaFoundationClasses extends Aelia_Plugin {
 	protected function set_hooks() {
 		parent::set_hooks();
 		add_filter('cron_schedules', array($this, 'cron_schedules'));
-		add_action('aelia_afc_geoip_updater', array('\Aelia\WC\IP2Location', 'update_database'));
 
 		// Admin init
 		add_action('admin_init', array($this, 'admin_init'), 5);
@@ -193,9 +192,7 @@ class WC_AeliaFoundationClasses extends Aelia_Plugin {
 	 * @since 1.6.0.150724
 	 */
 	protected function set_cron_schedules() {
-		if(!wp_get_schedule('aelia_afc_geoip_updater')) {
-			wp_schedule_event(time(), 'weekly', 'aelia_afc_geoip_updater');
-		}
+		// Standalone AFC Framework feature removed
 	}
 
 	/**
@@ -213,34 +210,6 @@ class WC_AeliaFoundationClasses extends Aelia_Plugin {
 	 * @since 1.9.10.171201
 	 */
 	public function show_admin_messages() {
-		// Inform admins about the upcoming versions for PHP 8.2 compatibility
-		// @since 2.3.0.220730
-		Messages::admin_message(
-			wp_kses_post(implode(' ', [
-				'<h3>',
-				'💡',
-				__('Aelia - Important notes about upcoming updates and PHP 8.2', Definitions::TEXT_DOMAIN),
-				'</h3>',
-				__('In the coming days, we will release some important updates for the Aelia plugins, to improve compatibility with PHP 8.2, while still fully supporting PHP versions from 7.1 to 8.1.', Definitions::TEXT_DOMAIN),
-				'<strong>',
-				__('Due to the number of small changes needed to support PHP 8.2 version, while keeping full backward compatibility, we strongly recommend to read the following article before installing the updates:', Definitions::TEXT_DOMAIN),
-				sprintf('<a href="%1$s" target="_blank">%2$s</a>.', 'https://aelia.co/php-8-performance-improvements-compatibility/', __('PHP 8.2 Compatibility Update for Aelia plugins', Definitions::TEXT_DOMAIN)),
-				'</strong>',
-				__('The article describes the changes in more detail.', Definitions::TEXT_DOMAIN),
-				__('It also includes a list of the affected plugins, as well as step by step instructions to perform a safe upgrade and troubleshoot possible issues.', Definitions::TEXT_DOMAIN),
-				'<br /><br />',
-				__('Should you have any questions in relation to the new versions or the upgrade process, please feel free to get in touch via our contact form:', self::$text_domain),
-				sprintf('<a href="%1$s" target="_blank">%1$s</a>.', 'https://aelia.co/contact'),
-				__('We will be happy to assist you.', self::$text_domain),
-			])),
-			[
-				'level' => E_USER_WARNING,
-				'code' => Definitions::NOTICE_UPDATES_PHP_82,
-				'dismissable' => true,
-				'permissions' => 'manage_woocommerce',
-				'message_header' => __('Important', Definitions::TEXT_DOMAIN),
-			]
-		);
 	}
 
 	/**
@@ -326,7 +295,6 @@ class WC_AeliaFoundationClasses extends Aelia_Plugin {
 	public function setup() {
 		// Keep track of the fact that we are in the setup phase
 		$this->running_setup = true;
-		IP2Location::install_database();
 
 		// Register the deactivation hook
 		register_deactivation_hook($this->main_plugin_file, array($GLOBALS['wc-aelia-foundation-classes'], 'deactivate'));
@@ -346,47 +314,8 @@ class WC_AeliaFoundationClasses extends Aelia_Plugin {
 	 */
 	public function woocommerce_loaded() {
 		if(!$this->running_setup && current_user_can('manage_woocommerce')) {
-			// Check if the forced installation of the GeoIP database was requested
-			if(!empty($_REQUEST[Definitions::ARG_INSTALL_GEOIP_DB])) {
-				$this->running_setup = true;
-				IP2Location::install_database();
-			}
 
-			if(is_admin()) {
-				// Ensure that the GeoIP database exists, and inform the Administrator if
-				// it doesn't
-				if(!$this->running_setup && !file_exists(IP2Location::geoip_db_file())) {
-					Messages::admin_message(
-						__('GeoIP database file not found.', self::$text_domain) .
-						'&nbsp;' .
-						sprintf(__('Please %s.', self::$text_domain),
-										IP2Location::get_geoip_install_html(__('try to install the database again',
-																										 self::$text_domain))) .
-						'&nbsp;' .
-						sprintf(__('If the error persists, please download the the database ' .
-											 'manually, from <a href="%1$s">%1$s</a>. Extract file ' .
-											 '<strong>%2$s</strong> from the archive and copy it to ' .
-											 '<code>%3$s</code>.',
-											 self::$text_domain),
-										IP2Location::GEOLITE_DB,
-										IP2Location::$geoip_db_file,
-										dirname(IP2Location::geoip_db_file())) .
-						'&nbsp;' .
-						__('Geolocation will become available automatically, as soon as the ' .
-							 'GeoIP database is copied in the indicated folder.',
-							 self::$text_domain) .
-						'&nbsp;<br /><br />' .
-						sprintf(__('For more information about this message, <a href="%s">please refer to our ' .
-											 'knowledge base</a>.',
-											 self::$text_domain),
-									 'http://bit.ly/AFC_Geolocation'),
-						array(
-							'level' => E_USER_ERROR,
-							'code' => Definitions::ERR_COULD_NOT_UPDATE_GEOIP_DATABASE,
-						)
-					);
-				}
-			}
+			// Standalone AFC Framework feature removed
 		}
 
 		// Load the components that perform operations in the background

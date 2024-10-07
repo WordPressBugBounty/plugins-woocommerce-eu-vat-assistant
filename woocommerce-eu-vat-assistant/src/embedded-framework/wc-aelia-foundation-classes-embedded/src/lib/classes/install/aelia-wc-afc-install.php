@@ -18,17 +18,6 @@ class WC_AeliaFoundationClasses_Install extends Aelia_Install {
 	}
 
 	/**
-	 * Runs plugin updates required by version 1.6.1.150728:
-	 * - Automatic update of GeoIP database.
-	 *
-	 * @since 1.6.1.150728
-	 */
-	protected function update_to_1_6_1_150728() {
-		IP2Location::install_database();
-		return true;
-	}
-
-	/**
 	 * Runs the updates required to upgrade to version 1.6.9.151103.
 	 * - Adds a table to keep track of dismissed messages.
 	 *

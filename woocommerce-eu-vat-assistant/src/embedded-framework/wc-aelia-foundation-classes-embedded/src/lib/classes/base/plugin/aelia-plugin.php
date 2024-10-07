@@ -697,24 +697,31 @@ if(!class_exists('Aelia\WC\Aelia_Plugin')) {
 		public static function is_frontend() {
 			$ajax_action = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']) : '';
 
+			$is_backend_wc_action = in_array($ajax_action, array(
+				// The following actions are called in the backend. If they are used, then
+				// we are in the backend, regardless of the fact that we are using Ajax
+				'woocommerce_load_variations',
+				'woocommerce_add_variation',
+				'woocommerce_remove_variations',
+				'woocommerce_save_variations',
+				'woocommerce_link_all_variations',
+				'woocommerce_bulk_edit_variations',
+				'woocommerce_json_search_products_and_variations',
+				// @since 2.0.18.200512
+				'woocommerce_do_ajax_product_import',
+				'woocommerce_do_ajax_product_export',
+			));
+
+			// Identify Quick Edit operations as being backend
+			// @since 2.4.28.240520
+			$is_backend_wc_quick_edit = !empty($_REQUEST['woocommerce_quick_edit']);
+
 			// Allow 3rd parties to determine dynamically if current context should be considered "frontend"
 			// @since 2.0.22.200820
 			return apply_filters('wc_aelia_is_frontend', !is_admin() || (
 				self::doing_ajax() &&
-				!in_array($ajax_action, array(
-					// The following actions are called in the backend. If they are used, then
-					// we are in the backend, regardless of the fact that we are using Ajax
-					'woocommerce_load_variations',
-					'woocommerce_add_variation',
-					'woocommerce_remove_variations',
-					'woocommerce_save_variations',
-					'woocommerce_link_all_variations',
-					'woocommerce_bulk_edit_variations',
-					'woocommerce_json_search_products_and_variations',
-					// @since 2.0.18.200512
-					'woocommerce_do_ajax_product_import',
-					'woocommerce_do_ajax_product_export',
-				))), static::$plugin_slug);
+				!$is_backend_wc_action && !$is_backend_wc_quick_edit
+			), static::$plugin_slug);
 		}
 
 		/**

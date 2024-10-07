@@ -5,7 +5,7 @@ Tags: woocommerce, utility, framework, aelia
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Requires at least: 5.0
-Tested up to: 6.4.9
+Tested up to: 6.5.9
 
 Adds a set of classes that can simplify the development of other plugins for WooCommerce.
 
@@ -34,8 +34,8 @@ This product includes GeoLite2 data created by MaxMind, available from [https://
 
 == Requirements ==
 * WordPress 4.0 or newer.
-* PHP 7.1 or newer.
-* WooCommerce 2.6 or newer.
+* PHP 7.2 or newer.
+* WooCommerce 3.0 or newer.
 
 = Notes =
 * This plugin is provided as-is, and it's not covered by our support service. See FAQ for more details.
@@ -66,12 +66,51 @@ Should you have any question about this product, please feel free to [contact us
 
 For more information about installation and management of plugins, please refer to [WordPress documentation](https://codex.wordpress.org/Managing_Plugins#Installing_Plugins).
 
-== Upgrade Notice ==
-
-= 2.4.0 =
-This update adds support for the High Performance Order Storage feature. [We recommend to read the release notes and the upgrade guidelines](https://aelia.co/php-8-performance-improvements-compatibility/) before installing this update.
-
 == Changelog ==
+
+= 2.6.0.241007 =
+* Tweak - Optimised logic used to update the Geolocation database. The file is now downloaded only when the Aelia geolocation feature is required.
+* Declared compatibility with WooCommerce 9.4.
+
+= 2.5.1.240910 =
+* Declared compatibility with WooCommerce 9.3.
+
+= 2.5.0.240825 =
+* Set minimum PHP version to 7.2.
+* Updated Nategood/Httpful dependency.
+* Updated Freemius SDK to version 2.7.3.
+
+= 2.4.31.240807 =
+* Declared compatibility with WooCommerce 9.2.
+
+= 2.4.30.240709 =
+* Declared compatibility with WooCommerce 9.1.
+
+= 2.4.29.240606 =
+* Declared compatibility with WooCommerce 9.0.
+
+= 2.4.28.240520 =
+* Fix - Added check to identify a Quick Edit operation, ensuring that it's handled as a backend context.
+
+= 2.4.27.240514 =
+* Declared compatibility with WooCommerce 8.9.
+
+= 2.4.26.240414 =
+* Declared compatibility with WooCommerce 8.8.
+
+= 2.4.26.240317 =
+* PHP 8.3 compatibility - Fixed deprecation notice related to a call to the `get_class()` function.
+
+= 2.4.25.240307 =
+* Declared compatibility with WooCommerce 8.7.
+* Declared compatibility with WordPress 6.5.9.
+
+= 2.4.24.240214 =
+* Fix - Fixed PHP 8.2 deprecation notice for property `ExchangeRatesModel::_current_rates`.
+* Fix - Updated Nategood/Httpful dependency for PHP 8.2 compatibility.
+
+= 2.4.23.240205 =
+* Declared compatibility with WooCommerce 8.6.
 
 = 2.4.22.240109 =
 * Declared compatibility with WooCommerce 8.5.
@@ -778,8 +817,3 @@ This update adds support for the High Performance Order Storage feature. [We rec
 = 1.0.2.140509 =
 * Updated Composer dependencies.
 * Removed unneeded code.
-
-== Upgrade Notice ==
-
-= 2.0 =
-Version 2.0 is a major update of the Aelia Foundation Classes. Although the upgrade is designed to be 100% backward compatible, we recommend take a full backup of your site before upgrading the plugin and test your ecommerce flow after the update.

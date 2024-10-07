@@ -4,10 +4,10 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit41f7d830cf9b2ceb95f1e19db080c0b6
+class ComposerStaticInit0f04fc7d4d9e10f66a2580057ad09dd4
 {
     public static $files = array (
-        '45a16669595eb3c0a9e2994e57fc3188' => __DIR__ . '/..' . '/yahnis-elsts/plugin-update-checker/load-v5p3.php',
+        'd05ecc14ff93fd612a81ec7e8ab4c2c9' => __DIR__ . '/..' . '/yahnis-elsts/plugin-update-checker/load-v5p4.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -236,10 +236,10 @@ class ComposerStaticInit41f7d830cf9b2ceb95f1e19db080c0b6
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit41f7d830cf9b2ceb95f1e19db080c0b6::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit41f7d830cf9b2ceb95f1e19db080c0b6::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit41f7d830cf9b2ceb95f1e19db080c0b6::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit41f7d830cf9b2ceb95f1e19db080c0b6::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit0f04fc7d4d9e10f66a2580057ad09dd4::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit0f04fc7d4d9e10f66a2580057ad09dd4::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit0f04fc7d4d9e10f66a2580057ad09dd4::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit0f04fc7d4d9e10f66a2580057ad09dd4::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -5,9 +5,9 @@
 		"maxmind-db/reader": "1.*",
 		"maxmind/web-service-common": "0.9",
 		"yahnis-elsts/plugin-update-checker": "5.*",
-		"nategood/httpful": "^0.2",
+		"nategood/httpful": "0.3.2",
 		"monolog/monolog": "^1.2",
-		"freemius/wordpress-sdk": "2.5.12"
+		"freemius/wordpress-sdk": "2.7.4"
   },
 	"require-dev": {
 		"mockery/mockery": "^1.3",

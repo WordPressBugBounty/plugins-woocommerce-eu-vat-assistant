@@ -8,7 +8,11 @@ use \InvalidArgumentException;
  * Implements a class that will render the settings page.
  */
 class Settings_Renderer {
-	// @var Aelia\WC\Settings The settings controller which will handle the settings.
+	/**
+	 * The settings controller which will handle the settings.
+	 *
+	 * @var Aelia\WC\CurrencySwitcher\Settings
+	 */
 	protected $_settings_controller;
 	// @var string The text domain to be used for localisation.
 	protected $_textdomain = '';

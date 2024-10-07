@@ -30,6 +30,14 @@ abstract class ExchangeRatesModel implements IExchangeRatesModel {
 	protected $_base_currency;
 
 	/**
+	 * Stores the rates fetched by the model.
+	 *
+	 * @var array
+	 * @since 2.4.24.240214
+	 */
+	protected $_current_rates = [];
+
+	/**
 	 * Class constructor.
 	 *
 	 * @param array An array of Settings that can be used to override the ones
@@ -116,7 +124,7 @@ abstract class ExchangeRatesModel implements IExchangeRatesModel {
 		$base_currency = apply_filters('wc_aelia_exchange_rates_base_currency', $base_currency, $currencies, $this);
 		// Allow 3rd parties to alter the list of currencies for which an exchange rate should be fetched
 		// @since 2.1.4.210208
-		$currencies = apply_filters('wc_aelia_exchange_rates_currencies', $currencies, $this);
+		$currencies = (array)apply_filters('wc_aelia_exchange_rates_currencies', $currencies, $this);
 
 		if(empty($base_currency)) {
 			throw new InvalidArgumentException(__('Base Currency is required, empty value received.',
@@ -145,7 +153,8 @@ abstract class ExchangeRatesModel implements IExchangeRatesModel {
 																									 $currency,
 																									 $base_currency);
 
-					$exchange_rate = round($exchange_rate, $exchange_rates_decimals);
+
+					$exchange_rate = round($exchange_rate, is_int($exchange_rates_decimals) ? (int)($exchange_rates_decimals) : self::EXCHANGE_RATE_DECIMALS);
 				}
 				else {
 					// If an invalid exchange rate is returned, just skip it altogether

@@ -60,6 +60,8 @@ class Definitions {
 
 	// @since 2.3.0.220730
 	const NOTICE_UPDATES_PHP_82 = 2104;
+	// @since 2.6.0.241007
+	const NOTICE_MAXMIND_GEOIP_LICENSE_KEY = 2105;
 
 	const ERR_INVALID_AJAX_REQUEST = 17001;
 	const ERR_AJAX_COMMAND_MISSING = 17002;

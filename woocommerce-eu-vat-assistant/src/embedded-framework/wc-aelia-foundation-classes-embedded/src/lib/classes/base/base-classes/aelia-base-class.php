@@ -54,7 +54,7 @@ class Base_Class {
 	 * Class constructor.
 	 */
 	public function __construct() {
-		$this->logger = new Logger(get_class());
+		$this->logger = new Logger(get_class($this));
 	}
 
 	/**
