@@ -88,7 +88,7 @@ class IP2Location extends Base_Class {
 
 			if(is_wp_error($result)) {
 				Messages::admin_message(wp_kses_post(implode(' ', [
-					__('Could not download and install the GeoIP database.', WC_AeliaFoundationClasses::$text_domain),
+					__('Could not download and install the GeoIP database.', Definitions::TEXT_DOMAIN),
 					$result->get_error_message(),
 				])),
 				array(
@@ -109,6 +109,9 @@ class IP2Location extends Base_Class {
 	public static function update_database(string $license_key) {
 		$result = true;
 		$afc = WC_AeliaFoundationClasses::instance();
+
+		// @since 2.6.0.241007
+		$afc->get_logger()->notice(__('Aelia IP2Location - Updating the GeoIP database.', Definitions::TEXT_DOMAIN));
 
 		// Set time limit to 5 minutes, if possible. Downloading the database can
 		// take some time
@@ -132,7 +135,7 @@ class IP2Location extends Base_Class {
 
 		$tmp_archive_path = download_url(esc_url_raw($download_uri));
 		if(is_wp_error($tmp_archive_path)) {
-			$afc->get_logger()->error(__('Unable to download GeoIP Database.', WC_AeliaFoundationClasses::$text_domain), array(
+			$afc->get_logger()->error(__('Unable to download GeoIP Database.', Definitions::TEXT_DOMAIN), array(
 				'GeoIP Database URL' => $download_uri,
 				'Error Message' => $tmp_archive_path->get_error_message(),
 			));
@@ -146,27 +149,27 @@ class IP2Location extends Base_Class {
 					// An error 401 indicates a missing authorisation
 					case 401:
 						$result = new WP_Error('wc_aelia_geolocation_database_license_key', wp_kses_post(implode(' ', [
-							__('The MaxMind license key is invalid.', WC_AeliaFoundationClasses::$text_domain),
+							__('The MaxMind license key is invalid.', Definitions::TEXT_DOMAIN),
 							sprintf(
-								__('Please go to <a href="%1$s">WooCommerce > Settings > Integration > MaxMind Geolocation</a> and enter your licence key.', WC_AeliaFoundationClasses::$text_domain),
+								__('Please go to <a href="%1$s">WooCommerce > Settings > Integration > MaxMind Geolocation</a> and enter your licence key.', Definitions::TEXT_DOMAIN),
 								admin_url('admin.php?page=wc-settings&tab=integration')
 							),
-							__('If you have recently created this key, you may need to wait for it to become active.', WC_AeliaFoundationClasses::$text_domain),
+							__('If you have recently created this key, you may need to wait for it to become active.', Definitions::TEXT_DOMAIN),
 						])));
 					break;
 					default:
 						$result = new WP_Error('wc_aelia_geolocation_database_generic_error', wp_kses_post(implode(' ', [
-							sprintf(__('Please %s.', WC_AeliaFoundationClasses::$text_domain), self::get_geoip_install_html(__('try to install the database again', ))),
+							sprintf(__('Please %s.', Definitions::TEXT_DOMAIN), self::get_geoip_install_html(__('try to install the database again', ))),
 							sprintf(__('If the error persists, please download the the database ' .
 												 'manually, from <a href="%1$s">the MaxMind website</a> (you will need to create a free account on their site). Extract file ' .
 												 '<strong>%2$s</strong> from the archive and copy it to ' .
 												 '<code>%3$s</code>.',
-												 WC_AeliaFoundationClasses::$text_domain),
+												 Definitions::TEXT_DOMAIN),
 											'https://dev.maxmind.com/geoip/geoip2/geolite2/',
 											IP2Location::$geoip_db_file,
 											dirname(IP2Location::geoip_db_file())),
-							__('Geolocation features will become available automatically, as soon as the GeoIP database is copied in the indicated folder.', WC_AeliaFoundationClasses::$text_domain),
-							sprintf(__('For more information about this message, <a href="%s">please refer to our knowledge base</a>.', WC_AeliaFoundationClasses::$text_domain), 'http://bit.ly/AFC_Geolocation'),
+							__('Geolocation features will become available automatically, as soon as the GeoIP database is copied in the indicated folder.', Definitions::TEXT_DOMAIN),
+							sprintf(__('For more information about this message, <a href="%s">please refer to our knowledge base</a>.', Definitions::TEXT_DOMAIN), 'http://bit.ly/AFC_Geolocation'),
 						])));
 					break;
 				}
@@ -181,17 +184,19 @@ class IP2Location extends Base_Class {
 
 			$tmp_database_path = trailingslashit(dirname($tmp_archive_path)) . trailingslashit($file->current()->getFilename()) . self::DATABASE . self::DATABASE_EXTENSION;
 
+			$geolocation_database_path = trailingslashit($file->current()->getFilename()) . self::DATABASE . self::DATABASE_EXTENSION;
 			$file->extractTo(
 				dirname($tmp_archive_path),
-				trailingslashit($file->current()->getFilename()) . self::DATABASE . self::DATABASE_EXTENSION,
+				$geolocation_database_path,
 				true
 			);
 		}
 		catch(Exception $exception) {
-			$afc->get_logger()->error(__('Unable to open downloaded GeoIP database file. The GeoIP database could not be updated.', WC_AeliaFoundationClasses::$text_domain), array(
+			$afc->get_logger()->error(__('Unable to open downloaded GeoIP database file. The GeoIP database could not be updated.', Definitions::TEXT_DOMAIN), array(
 				'GeoIP Database URL' => $download_uri,
 				'Temporary Downloaded File Path' => $tmp_archive_path,
 				'Target File' => $geolocation_database_path,
+				'Exception Message' => $exception->getMessage(),
 			));
 			return new WP_Error('wc_aelia_geolocation_database_archive_error', $exception->getMessage());
 		}
@@ -201,7 +206,7 @@ class IP2Location extends Base_Class {
 		}
 
 		if(!WP_Filesystem()) {
-			$error_msg = __('Failed to initialise WC_Filesystem API while trying to update the MaxMind Geolocation database.', WC_AeliaFoundationClasses::$text_domain);
+			$error_msg = __('Failed to initialise WC_Filesystem API while trying to update the MaxMind Geolocation database.', Definitions::TEXT_DOMAIN);
 			$afc->get_logger()->warning($error_msg);
 			return new WP_Error('wc_aelia_geolocation_database_archive_extract_error', $error_msg);
 		}
@@ -227,9 +232,11 @@ class IP2Location extends Base_Class {
 	 * @since 2.6.0.241007
 	 */
 	public static function delete_database() {
+		WC_AeliaFoundationClasses::instance()->get_logger()->notice(__('Aelia IP2Location - Deleting the GeoIP database.', Definitions::TEXT_DOMAIN));
+
 		$result = true;
 		if(!WP_Filesystem()) {
-			$error_msg = __('Failed to initialise WC_Filesystem API while trying to delete the MaxMind Geolocation database.', WC_AeliaFoundationClasses::$text_domain);
+			$error_msg = __('Failed to initialise WC_Filesystem API while trying to delete the MaxMind Geolocation database.', Definitions::TEXT_DOMAIN);
 			WC_AeliaFoundationClasses::instance()->get_logger()->warning($error_msg);
 			return new WP_Error('wc_aelia_geolocation_database_archive_delete_error', $error_msg);
 		}
@@ -306,7 +313,7 @@ class IP2Location extends Base_Class {
 			$this->errors[] = sprintf(__('Method IP2Location::get_country_code() expects a valid IPv4 or IPv6 ' .
 																	 'address (it will not work with host names). "%s" was passed, which is ' .
 																	 'not a valid address.',
-																	 $this->text_domain),
+																	 Definitions::TEXT_DOMAIN),
 																$ip_address);
 			return false;
 		}
@@ -322,7 +329,7 @@ class IP2Location extends Base_Class {
 	public function get_country_code($ip_address){
 		// Log the attempt to resolve the IP address to a country code
 		// @since 2.0.3.190129
-		$this->logger->debug(__('Attempting to detect country from IP address.', WC_AeliaFoundationClasses::$text_domain), array(
+		$this->logger->debug(__('Attempting to detect country from IP address.', Definitions::TEXT_DOMAIN), array(
 			'IP Address' => $ip_address,
 		));
 
@@ -347,7 +354,7 @@ class IP2Location extends Base_Class {
 
 		// Log the detected country code
 		// @since 2.0.3.190129
-		$this->logger->debug(__('Country detected.', WC_AeliaFoundationClasses::$text_domain), array(
+		$this->logger->debug(__('Country detected.', Definitions::TEXT_DOMAIN), array(
 			'IP Address' => $ip_address,
 			'Country Code' => $country_code,
 		));
@@ -378,7 +385,7 @@ class IP2Location extends Base_Class {
 				// Create the Reader object, which should be reused across lookups.
 				$reader = $this->get_db_reader();
 				if($reader === false) {
-					$this->logger->warning(__('Could not instantiate GeoIP DB Reader. Geolocation aborted.', WC_AeliaFoundationClasses::$text_domain));
+					$this->logger->warning(__('Could not instantiate GeoIP DB Reader. Geolocation aborted.', Definitions::TEXT_DOMAIN));
 					return false;
 				}
 				$city = $reader->city($ip_address);
@@ -408,7 +415,7 @@ class IP2Location extends Base_Class {
 	public function get_state($ip_address) {
 		// Log the attempt to resolve the IP address to a state code
 		// @since 2.0.3.190129
-		$this->logger->debug(__('Attempting to detect state from IP address.', WC_AeliaFoundationClasses::$text_domain), array(
+		$this->logger->debug(__('Attempting to detect state from IP address.', Definitions::TEXT_DOMAIN), array(
 			'IP Address' => $ip_address,
 		));
 
@@ -427,7 +434,7 @@ class IP2Location extends Base_Class {
 
 		// Log the detected state code
 		// @since 2.0.3.190129
-		$this->logger->debug(__('State detected.', WC_AeliaFoundationClasses::$text_domain), array(
+		$this->logger->debug(__('State detected.', Definitions::TEXT_DOMAIN), array(
 			'IP Address' => $ip_address,
 			'State Code' => $state_code,
 		));
@@ -457,7 +464,7 @@ class IP2Location extends Base_Class {
 	public function get_visitor_ip_address() {
 		// Log the attempt to resolve the IP address
 		// @since 2.0.3.190129
-		$this->logger->debug(__('Attempting to fetch IP address of visitor.', WC_AeliaFoundationClasses::$text_domain), array(
+		$this->logger->debug(__('Attempting to fetch IP address of visitor.', Definitions::TEXT_DOMAIN), array(
 			'$_SERVER[HTTP_CLIENT_IP]' => isset($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] : '',
 			'$_SERVER[HTTP_X_FORWARDED_FOR]' => isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : '',
 			'$_SERVER[HTTP_X_REAL_IP]' =>isset($_SERVER['HTTP_X_REAL_IP']) ? $_SERVER['HTTP_X_REAL_IP'] : '',
@@ -480,7 +487,7 @@ class IP2Location extends Base_Class {
 					if(filter_var($ip_address, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false) {
 						// Log the detected IP address
 						// @since 2.0.3.190129
-						$this->logger->debug(__('Found valid IP address.', WC_AeliaFoundationClasses::$text_domain), array(
+						$this->logger->debug(__('Found valid IP address.', Definitions::TEXT_DOMAIN), array(
 							'Visitor IP Address' => $ip_address,
 						));
 

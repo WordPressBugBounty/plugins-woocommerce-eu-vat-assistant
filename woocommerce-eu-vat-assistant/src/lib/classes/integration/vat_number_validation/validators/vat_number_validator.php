@@ -360,7 +360,7 @@ abstract class VAT_Number_Validator implements IVAT_Number_Validator {
 	protected function valid_cached_response($response) {
 		return ($response !== false) &&
 					 is_array($response) &&
-					 ($response['valid'] ?? null == 'true');
+					 (($response['valid'] ?? null) == 'true');
 	}
 
 	/**

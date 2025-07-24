@@ -242,12 +242,6 @@ class Freemius_Plugins_Manager extends Updater {
 	public function wc_aelia_afc_load_admin_scripts(): void {
 		// Prepare parameters for Freemius License Management page
 		if(self::managing_licenses()) {
-			// Load the JavaScript for the Freemius License Management section
-			wp_enqueue_script(Definitions::PLUGIN_SLUG . '-admin-freemius-licenses',
-												$this->AFC()->url('js') . '/admin/admin-manage-freemius-licenses.js',
-												array('jquery', Definitions::PLUGIN_SLUG . '-admin-common'),
-												null,
-												true);
 			// Load the styles for the Freemius License Management section
 			wp_enqueue_style(Definitions::PLUGIN_SLUG . '-admin-freemius-licenses', $this->AFC()->url('css') . '/freemius-licenses-section.css');
 		}

@@ -35,7 +35,14 @@ class Messages {
 	public function __construct($text_domain = self::DEFAULT_TEXTDOMAIN) {
 		$this->text_domain = $text_domain;
 		$this->wp_error = new \WP_Error();
-		$this->load_error_messages();
+
+		// Compatibility with WP 6.7 and later
+		// Load the messages during the `init` event, to prevent triggering the notice
+		// "Function _load_textdomain_just_in_time was called incorrectly"
+		// @since 2.6.6.250524
+		add_action('init', function() {
+			$this->load_error_messages();
+		}, 15);
 	}
 
 	/**

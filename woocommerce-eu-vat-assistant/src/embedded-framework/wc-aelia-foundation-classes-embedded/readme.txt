@@ -5,7 +5,7 @@ Tags: woocommerce, utility, framework, aelia
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Requires at least: 5.0
-Tested up to: 6.5.9
+Tested up to: 6.8.9
 
 Adds a set of classes that can simplify the development of other plugins for WooCommerce.
 
@@ -67,6 +67,34 @@ Should you have any question about this product, please feel free to [contact us
 For more information about installation and management of plugins, please refer to [WordPress documentation](https://codex.wordpress.org/Managing_Plugins#Installing_Plugins).
 
 == Changelog ==
+
+= 2.6.7.250625 =
+* Feature - Added function `aelia_is_cogs_feature_enabled()`.
+* Declared compatibility with WooCommerce 10.0.
+* Declared compatibility with Cost of Goods feature.
+
+= 2.6.6.250524 =
+* Tweak - Improved compatibility with WordPress 6.7. Moved loading of the plugin's error messages to the `init` event.
+* Declared compatibility with WooCommerce 9.9.
+
+= 2.6.5.250414 =
+* Declared compatibility with WooCommerce 9.8.
+* Declared compatibility with WordPress 6.8.9.
+
+= 2.6.4.250217 =
+* Tweak - Added extra check to skip invalid values for the "action" argument.
+* Declared compatibility with WooCommerce 9.7.
+
+= 2.6.3.250103 =
+* Fix - Removed reference to non-existent file `admin-manage-freemius-licenses.js`.
+* Declared compatibility with WooCommerce 9.6.
+
+= 2.6.2.241202 =
+* Declared compatibility with WooCommerce 9.5.
+
+= 2.6.1.241029 =
+* Tweak - Improved compatibility with WordPress 6.7. Moved loading of the plugin's localisation to the `init` event.
+* Declared compatibility with WordPress 6.7.
 
 = 2.6.0.241007 =
 * Tweak - Optimised logic used to update the Geolocation database. The file is now downloaded only when the Aelia geolocation feature is required.

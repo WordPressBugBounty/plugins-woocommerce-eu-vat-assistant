@@ -13,7 +13,7 @@ use Aelia\WC\AFC\Messages;
  * Aelia Foundation Classes for WooCommerce.
  **/
 class WC_AeliaFoundationClasses extends Aelia_Plugin {
-	public static $version = '2.6.0.241007';
+	public static $version = '2.6.7.250625';
 
 	public static $plugin_slug = Definitions::PLUGIN_SLUG;
 	public static $text_domain = Definitions::TEXT_DOMAIN;
@@ -89,7 +89,6 @@ class WC_AeliaFoundationClasses extends Aelia_Plugin {
 	 */
 	protected function set_hooks() {
 		parent::set_hooks();
-		add_filter('cron_schedules', array($this, 'cron_schedules'));
 
 		// Admin init
 		add_action('admin_init', array($this, 'admin_init'), 5);
@@ -307,6 +306,24 @@ class WC_AeliaFoundationClasses extends Aelia_Plugin {
 	 */
 	public function deactivate() {
 		wp_clear_scheduled_hook('aelia_afc_geoip_updater');
+	}
+
+	/**
+	 * Take care of anything that needs to be done as soon as WordPress finished loading.
+	 *
+	 * @since 2.6.6.250524
+	 */
+	public function wordpress_loaded() {
+		parent::wordpress_loaded();
+
+		// Register additional cron schedules.
+		//
+		// NOTE
+		// Since WordPress 6.7, this must be done during the `init` event to prevent the conflict caused
+		// by the Freemius initialisation logic.
+		// @link https://bitbucket.org/businessdad/wc-aelia-foundation-classes/issues/28
+		// @since 2.6.6.250524
+		add_filter('cron_schedules', array($this, 'cron_schedules'));
 	}
 
 	/**

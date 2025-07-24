@@ -442,9 +442,6 @@ if(!class_exists('Aelia\WC\Aelia_Plugin')) {
 				self::$_settings = array();
 			}
 			self::$_settings[static::$plugin_slug] = $settings_controller;
-
-			// Set schedules, if needed
-			$this->set_cron_schedules();
 		}
 
 		/**
@@ -488,16 +485,25 @@ if(!class_exists('Aelia\WC\Aelia_Plugin')) {
 		 * loading.
 		 */
 		public function wordpress_loaded() {
+			// Load the localisation files
+			// @since 2.6.1.241029
+			// @link https://make.wordpress.org/core/2024/10/21/i18n-improvements-6-7/
+			load_plugin_textdomain(static::$text_domain, false, $this->path('languages_rel') . '/');
+
+
 			if(!is_admin()) {
 				$this->register_common_frontend_scripts();
 			}
+
+			// Set schedules, if needed
+			// @since 2.6.0.241007
+			$this->set_cron_schedules();
 		}
 
 		/**
 		 * Performs operation when all plugins have been loaded.
 		 */
 		public function plugins_loaded() {
-			load_plugin_textdomain(static::$text_domain, false, $this->path('languages_rel') . '/');
 		}
 
 		/**
@@ -695,7 +701,10 @@ if(!class_exists('Aelia\WC\Aelia_Plugin')) {
 		 * @since 1.6.3.15815
 		 */
 		public static function is_frontend() {
-			$ajax_action = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']) : '';
+			// Check that the "action" argument is set and is a string. In that case, conver it
+			// to lower case to avoid mismatches due to simple case differences
+			// @since 2.6.4.250217
+			$ajax_action = isset($_REQUEST['action']) && is_string($_REQUEST['action']) ? strtolower($_REQUEST['action']) : '';
 
 			$is_backend_wc_action = in_array($ajax_action, array(
 				// The following actions are called in the backend. If they are used, then

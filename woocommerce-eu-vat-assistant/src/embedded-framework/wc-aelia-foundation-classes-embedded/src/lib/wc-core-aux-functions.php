@@ -484,6 +484,25 @@ if(!function_exists('aelia_is_hpos_feature_enabled')) {
 	}
 }
 
+if(!function_exists('aelia_is_cogs_feature_enabled')) {
+	/**
+	 * Indicates if the Cost of Goods feature is enabled.
+	 *
+	 * @return bool
+	 * @since 2.6.7.250625
+	 */
+	function aelia_is_cogs_feature_enabled(): bool {
+		if(class_exists('\Automattic\WooCommerce\Internal\CostOfGoodsSold\CostOfGoodsSoldController')) {
+			$cogs_enabled = wc_get_container()->get(\Automattic\WooCommerce\Internal\CostOfGoodsSold\CostOfGoodsSoldController::class)->feature_is_enabled();
+		}
+		else {
+			$cogs_enabled = false;
+		}
+
+		return $cogs_enabled;
+	}
+}
+
 if(!function_exists('aelia_get_task_scheduler')) {
 	/**
 	 * Returns the instance of the task scheduler used by the Aelia plugins.

@@ -16,6 +16,10 @@ class Definitions {
 	// @var string The URL to the support request page
 	const URL_SUPPORT = 'https://aelia.co/contact';
 
+	// @var string The URL to the documentation explaining how to get a MaxMind licence key
+	// @since 2.6.0.241007
+	const URL_MAXMIND_LICENCE_INSTRUCTIONS = 'https://woocommerce.com/document/maxmind-geolocation-integration/';
+
 	// Get/Post Arguments
 	const ARG_INSTALL_GEOIP_DB = 'aelia_install_geoip_db';
 	const ARG_MESSAGE_ID = 'aelia_msg_id';
