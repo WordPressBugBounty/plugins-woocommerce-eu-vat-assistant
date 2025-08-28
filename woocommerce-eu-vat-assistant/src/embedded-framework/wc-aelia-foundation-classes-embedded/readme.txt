@@ -68,6 +68,9 @@ For more information about installation and management of plugins, please refer 
 
 == Changelog ==
 
+= 2.6.8.250806 =
+* Declared compatibility with WooCommerce 10.1.
+
 = 2.6.7.250625 =
 * Feature - Added function `aelia_is_cogs_feature_enabled()`.
 * Declared compatibility with WooCommerce 10.0.

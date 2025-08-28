@@ -3,7 +3,7 @@
         'name' => 'aelia/wc-aelia-foundation-classes',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'de3fd717e4d2772f8b2b6ea88e95c8e426da43b3',
+        'reference' => '7804247a283f2b102e7b5922ed2a16eec0ee36c5',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'aelia/wc-aelia-foundation-classes' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'de3fd717e4d2772f8b2b6ea88e95c8e426da43b3',
+            'reference' => '7804247a283f2b102e7b5922ed2a16eec0ee36c5',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
