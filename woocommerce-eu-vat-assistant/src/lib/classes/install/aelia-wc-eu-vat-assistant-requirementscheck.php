@@ -10,7 +10,7 @@ class Aelia_WC_EU_VAT_Assistant_RequirementsChecks extends Aelia_WC_Requirements
 	// @var string The namespace for the messages displayed by the class.
 	protected $text_domain = 'wc-aelia-eu-vat-assistant';
 	// @var string The plugin for which the requirements are being checked. Change it in descendant classes.
-	protected $plugin_name = 'WooCommerce EU VAT Assistant';
+	protected $plugin_name = 'EU VAT Assistant for WooCommerce';
 
 	// @var array An array of PHP extensions required by the plugin
 	protected $required_extensions = array(
@@ -163,12 +163,12 @@ class Aelia_WC_EU_VAT_Assistant_RequirementsChecks extends Aelia_WC_Requirements
 		?>
 		<div class="wc_aelia message error fade">
 			<h3 class="wc_aeliamessage_header" style="margin: 1em 0 0 0"><?php
-				echo wp_kses_post(__('The WooCommerce EU VAT Assistant has been replaced by the "Aelia VAT Assistant for WooCommerce"', $this->text_domain));
+				echo wp_kses_post(__('The EU VAT Assistant for WooCommerce has been replaced by the "Aelia VAT Assistant for WooCommerce"', $this->text_domain));
 			?></h3>
 			<p class="info"><?php
 				echo wp_kses_post(implode(' ', array(
 					__('It looks like the plugin "Aelia VAT Assistant for WooCommerce" is installed on your site.', $this->text_domain),
-					__('That is a premium solution that replaces the original, free WooCommerce EU VAT Assistant.', $this->text_domain),
+					__('That is a premium solution that replaces the original, free EU VAT Assistant for WooCommerce.', $this->text_domain),
 					sprintf(__('Please <a href="%2$s" target="_blank">go to the Plugins page</a>, then disable and remove plugin "%1$s".', $this->text_domain), $this->plugin_name, admin_url('/plugins.php', true)),
 					__('Its features will remain available, as they are included in the Aelia VAT Assistant for WooCommerce.', $this->text_domain),
 				)));

@@ -8,7 +8,6 @@ use \Exception;
  * Retrieves the exchange rates from the HM Revenue and Customs (UK).
  *
  * @link https://www.gov.uk/government/publications/exchange-rates-for-customs-and-vat-monthly
- * @link http://www.hmrc.gov.uk/softwaredevelopers/2014-exrates.htm
  */
 class Exchange_Rates_HMRC_Model extends \Aelia\WC\ExchangeRatesModel {
 	/**
@@ -17,14 +16,8 @@ class Exchange_Rates_HMRC_Model extends \Aelia\WC\ExchangeRatesModel {
 	 * without reason.
 	 * @var string
 	 */
-	protected $hmrc_api_rates_urls = array(
-		// URL until the end of 2014
-		'http://www.hmrc.gov.uk/softwaredevelopers/rates/exrates-monthly-%s.xml',
-		// URL introduced in February 2015
-		'http://www.hmrc.gov.uk/softwaredevelopers/rates/excrates_monthly%s.xml',
-		// URL introduced in January 2015
-		'http://www.hmrc.gov.uk/softwaredevelopers/rates/exrates_monthly_%s.xml',
-	);
+	// URL introduced in January 2022
+	protected $hmrc_api_rates_url = 'https://www.trade-tariff.service.gov.uk/exchange_rates/view/files/monthly_xml_%s.xml';
 
 	/**
 	 * Tranforms the exchange rates received from HMRC into an array of
@@ -56,46 +49,38 @@ class Exchange_Rates_HMRC_Model extends \Aelia\WC\ExchangeRatesModel {
 			self::ERR_ERROR_RETURNED => array(),
 			self::ERR_EXCEPTION_OCCURRED => array(),
 		);
-		foreach($this->hmrc_api_rates_urls as $url_template) {
-			// The feed URL changes every month
-			$feed_url = sprintf($url_template, date('my'));
-			try {
-				$response = \Httpful\Request::get($feed_url)
-					->expectsXml()
-					->send();
 
-				// Debug
-				//var_dump("HMRC RATES RESPONSE:", $response); die();
-				if($response->hasErrors()) {
-					// OpenExchangeRates sends error details in response body
-					if($response->hasBody()) {
-						$response_data = $response->body;
+		// The feed URL changes every month
+		$feed_url = sprintf($this->hmrc_api_rates_url, date('Y-m'));
+		try {
+			// Fetch the exchange rates using WP functions
+			// @since 2.1.26.251024
+			$response = wp_remote_get(esc_url_raw(apply_filters('wc_aelia_cs_hmrc_fetch_rates_request_url', $feed_url)));
 
-						$errors[self::ERR_ERROR_RETURNED][] =
-							sprintf(__('Error returned by HMRC. ' .
-												 'Feed URLs used for retrieval: %s. Error code: %s. Error message: %s - %s.',
-												 Definitions::TEXT_DOMAIN),
-											'"' . implode('", "', $this->hmrc_api_rates_urls) . '"',
-											$response_data->status,
-											$response_data->message,
-											$response_data->description);
-					}
-				}
-				else {
-					// Return as soon as a good response is received
-					return $response->body;
-				}
+			if(is_wp_error($response)) {
+				$this->add_error(self::ERR_ERROR_RETURNED,
+												sprintf(__('Error returned by the HMRC service. Error code: %1$s. Error message: %2$s.', Definitions::TEXT_DOMAIN),
+																$response->get_error_code(),
+																$response->get_error_message())
+				);
+				return false;
 			}
-			catch(Exception $e) {
-				$errors[self::ERR_EXCEPTION_OCCURRED][] =
-					sprintf(__('Exception occurred while retrieving the exchange rates from HMRC. ' .
-										 'Feed URLs used for retrieval: %s. Error message: %s.',
-										 Definitions::TEXT_DOMAIN),
-									'"' . implode('", "', $this->hmrc_api_rates_urls) . '"',
-									$e->getMessage());
-			}
+
+			// Convert the response to an XML object and return it. The conversion is done with the errors and warnings
+			// hidden by default, because the error handling is already covered
+			// @since 2.1.26.251024
+			return simplexml_load_string($response['body'], 'SimpleXMLElement', apply_filters('wc_aelia_cs_hmrc_convert_xml_rates_flags', LIBXML_NOERROR | LIBXML_NOWARNING));
 		}
-		// If we reach this point, then it means that the model could not retrieve
+		catch(Exception $e) {
+			$errors[self::ERR_EXCEPTION_OCCURRED][] =
+				sprintf(__('Exception occurred while retrieving the exchange rates from HMRC. ' .
+										'Feed URLs used for retrieval: %s. Error message: %s.',
+										Definitions::TEXT_DOMAIN),
+								$this->hmrc_api_rates_url,
+								$e->getMessage());
+		}
+
+			// If we reach this point, then it means that the model could not retrieve
 		// valid exchange rates from any of the URLs, so we can just add the errors
 		// and return "false".
 		foreach($errors as $error_type => $messages) {

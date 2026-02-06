@@ -37,28 +37,22 @@ class Exchange_Rates_BitPay_Model extends \Aelia\WC\ExchangeRatesModel {
 	 */
 	private function fetch_all_rates() {
 		try {
-			$response = \Httpful\Request::get($this->bitpay_api_rates_url)
-				->expectsJson()
-				->send();
+			// Fetch the exchange rates using WP functions
+			// @since 2.1.26.251024
+			$response = wp_remote_get(esc_url_raw(apply_filters('wc_aelia_cs_bitpay_fetch_rates_request_url', $this->bitpay_api_rates_url)));
 
-			// Debug
-			//var_dump("BITPAY RATES RESPONSE:", $response); die();
-			if($response->hasErrors()) {
-				// OpenExchangeRates sends error details in response body
-				if($response->hasBody()) {
-					$response_data = $response->body;
-
-					$this->add_error(self::ERR_ERROR_RETURNED,
-													 sprintf(__('Error returned by BitPay. ' .
-																			'Error code: %s. Error message: %s - %s.',
-																			Definitions::TEXT_DOMAIN),
-																	 $response_data->status,
-																	 $response_data->message,
-																	 $response_data->description));
-				}
+			if(is_wp_error($response)) {
+				$this->add_error(self::ERR_ERROR_RETURNED,
+												 sprintf(__('Error returned by the Bitpay service. Error code: %1$s. Error message: %2$s.', Definitions::TEXT_DOMAIN),
+																 $response->get_error_code(),
+																 $response->get_error_message())
+				);
 				return false;
 			}
-			return $response->body;
+
+			// Convert the response to an JSON object and return it
+			// @since 2.1.26.251024
+			return json_decode($response['body']);
 		}
 		catch(Exception $e) {
 			$this->add_error(self::ERR_EXCEPTION_OCCURRED,

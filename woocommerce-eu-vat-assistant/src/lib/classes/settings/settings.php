@@ -103,6 +103,8 @@ class Settings extends \Aelia\WC\Settings {
 	protected $_exchange_rates_update_hook = 'aelia_wc_eu_vat_assistant_exchange_rates_update_hook';
 	// @var array A list of the available exchange rates models.
 	protected $_exchange_rates_models;
+	// @var \Aelia\WC\ExchangeRatesModel The model used to fetch the exchange rates.
+	protected $_exchange_rates_model;
 
 	// @var array A list of validation errors.
 	protected $validation_errors;
@@ -594,7 +596,10 @@ class Settings extends \Aelia\WC\Settings {
 			$namespace_prefix . 'Exchange_Rates_BitPay_Model' => __('BitPay', $this->textdomain),
 			$namespace_prefix . 'Exchange_Rates_ECB_Model' => __('ECB', $this->textdomain),
 			$namespace_prefix . 'Exchange_Rates_HMRC_Model' => __('HMRC (UK)', $this->textdomain),
-			$namespace_prefix . 'Exchange_Rates_IrishRevenueHTML_Model' => __('Irish Revenue (HTML) - WARNING: experimental, may not always work!', $this->textdomain),
+			// The Irish Revenue page has changed significantly. Since the EU VAT Assistant is no longer actively
+			// developed, we can't implement a new integration with that system
+			// @deprecated x.x
+			//$namespace_prefix . 'Exchange_Rates_IrishRevenueHTML_Model' => __('Irish Revenue (HTML) - WARNING: experimental, may not always work!', $this->textdomain),
 			$namespace_prefix . 'Exchange_Rates_DNB_Model' => __('Danish National Bank', $this->textdomain),
 			// The Exchange_Rates_ECB_Historical_Model is used by reports. It's added to this list, but
 			// commented out, so that it can enabled and used for testing as needed

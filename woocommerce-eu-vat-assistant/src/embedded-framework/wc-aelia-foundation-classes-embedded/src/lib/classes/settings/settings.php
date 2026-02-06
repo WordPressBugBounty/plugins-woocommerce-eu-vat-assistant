@@ -77,7 +77,7 @@ class Settings extends \Aelia\WC\Settings {
 	 */
 	public function __construct($settings_key = self::SETTINGS_KEY,
 															$text_domain = '',
-															\Aelia\WC\Settings_Renderer $renderer = null) {
+															?\Aelia\WC\Settings_Renderer $renderer = null) {
 		$this->settings_key = $settings_key;
 
 		self::$text_domain = $text_domain;

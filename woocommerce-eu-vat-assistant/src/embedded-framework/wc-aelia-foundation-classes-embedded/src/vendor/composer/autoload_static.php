@@ -4,10 +4,11 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitb104e3aaec84d587cf289bf0f244ce1b
+class ComposerStaticInit21a498b09dffed26b28a914127e3e04e
 {
     public static $files = array (
-        '256558b1ddf2fa4366ea7d7602798dd1' => __DIR__ . '/..' . '/yahnis-elsts/plugin-update-checker/load-v5p5.php',
+        '8d50dc88e56bace65e1e72f6017983ed' => __DIR__ . '/..' . '/freemius/wordpress-sdk/start.php',
+        'f6d4f6bcee7247df6b777884c3e22f98' => __DIR__ . '/..' . '/yahnis-elsts/plugin-update-checker/load-v5p6.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -47,16 +48,6 @@ class ComposerStaticInitb104e3aaec84d587cf289bf0f244ce1b
         'Composer\\CaBundle\\' => 
         array (
             0 => __DIR__ . '/..' . '/composer/ca-bundle/src',
-        ),
-    );
-
-    public static $prefixesPsr0 = array (
-        'H' => 
-        array (
-            'Httpful' => 
-            array (
-                0 => __DIR__ . '/..' . '/nategood/httpful/src',
-            ),
         ),
     );
 
@@ -236,10 +227,9 @@ class ComposerStaticInitb104e3aaec84d587cf289bf0f244ce1b
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitb104e3aaec84d587cf289bf0f244ce1b::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitb104e3aaec84d587cf289bf0f244ce1b::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitb104e3aaec84d587cf289bf0f244ce1b::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitb104e3aaec84d587cf289bf0f244ce1b::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit21a498b09dffed26b28a914127e3e04e::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit21a498b09dffed26b28a914127e3e04e::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit21a498b09dffed26b28a914127e3e04e::$classMap;
 
         }, null, ClassLoader::class);
     }

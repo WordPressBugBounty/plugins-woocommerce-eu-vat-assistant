@@ -68,6 +68,14 @@ For more information about installation and management of plugins, please refer 
 
 == Changelog ==
 
+= 2.6.10.251024 =
+* Declared compatibility with WooCommerce 10.3.
+
+= 2.6.9.250918 =
+* Declared compatibility with WooCommerce 10.2.
+* Tweak - Improved compatibility with PHP 8.4.
+* Updated Freemius SDK to version 2.12.0.
+
 = 2.6.8.250806 =
 * Declared compatibility with WooCommerce 10.1.
 

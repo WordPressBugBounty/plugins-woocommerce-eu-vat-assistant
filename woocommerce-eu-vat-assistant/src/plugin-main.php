@@ -18,11 +18,11 @@ use \InvalidArgumentException;
  * EU VAT Assistant plugin.
  */
 class WC_Aelia_EU_VAT_Assistant extends Aelia_Plugin {
-	public static $version = '2.1.24.250806';
+	public static $version = '2.1.26.251024';
 
 	public static $plugin_slug = Definitions::PLUGIN_SLUG;
 	public static $text_domain = Definitions::TEXT_DOMAIN;
-	public static $plugin_name = 'WooCommerce EU VAT Assistant';
+	public static $plugin_name = 'EU VAT Assistant for WooCommerce';
 
 	/**
 	 * The slug used to check for updates.
@@ -58,13 +58,28 @@ class WC_Aelia_EU_VAT_Assistant extends Aelia_Plugin {
 	protected $_vat_number_validators = array();
 
 
-	/** Shop's base country. Used to determine if a VAT exemption can be applied
+	/**
+	 * Shop's base country. Used to determine if a VAT exemption can be applied
 	 * (usually, exemption cannot be applied to customers located in shop's base
 	 * country).
 	 * @var string
 	 * @since 1.4.12.150923
 	 */
 	protected $shop_base_country;
+
+	/**
+	 * The list of countries to which EU VAT rules apply.
+	 *
+	 * @var array
+	 */
+	protected $eu_vat_countries = [];
+
+	/**
+	 * The country matching visito's IP address.
+	 *
+	 * @var string
+	 */
+	protected $ip_address_country = '';
 
 	/**
 	 * Initialises and returns the plugin instance.
@@ -371,7 +386,7 @@ class WC_Aelia_EU_VAT_Assistant extends Aelia_Plugin {
 	public function show_admin_messages() {
 		// Show a warning to the administrator, about the migration to Simba Hosting's
 		// VAT Compliance plugin, for EU/UK/Norway rules.
-		// @since x.x
+		// @since 2.0.5.210102
 		// TODO Remove the message when no longer needed (e.g. after the 1st March 2022)
 		if(date('Y-m-d') < '2023-01-01') {
 			Messages::admin_message(wp_kses_post(implode(' ', array(

@@ -40,28 +40,23 @@ class Exchange_Rates_ECB_Model extends \Aelia\WC\ExchangeRatesModel {
 	 */
 	private function fetch_all_rates() {
 		try {
-			$response = \Httpful\Request::get($this->ecb_api_rates_url)
-				->expectsXml()
-				->send();
+			// Fetch the exchange rates using WP functions
+			// @since 2.1.26.251024
+			$response = wp_remote_get(esc_url_raw(apply_filters('wc_aelia_cs_ecb_fetch_rates_request_url', $this->ecb_api_rates_url)));
 
-			// Debug
-			//var_dump("ECB RATES RESPONSE:", $response); die();
-			if($response->hasErrors()) {
-				// OpenExchangeRates sends error details in response body
-				if($response->hasBody()) {
-					$response_data = $response->body;
-
-					$this->add_error(self::ERR_ERROR_RETURNED,
-													 sprintf(__('Error returned by ECB. ' .
-																			'Error code: %s. Error message: %s - %s.',
-																			Definitions::TEXT_DOMAIN),
-																	 $response_data->status,
-																	 $response_data->message,
-																	 $response_data->description));
-				}
+			if(is_wp_error($response)) {
+				$this->add_error(self::ERR_ERROR_RETURNED,
+												 sprintf(__('Error returned by the ECB service. Error code: %1$s. Error message: %2$s.', Definitions::TEXT_DOMAIN),
+																 $response->get_error_code(),
+																 $response->get_error_message())
+				);
 				return false;
 			}
-			return $response->body;
+
+			// Convert the response to an XML object and return it. The conversion is done with the errors and warnings
+			// hidden by default, because the error handling is already covered
+			// @since 2.1.26.251024
+			return simplexml_load_string($response['body'], 'SimpleXMLElement', apply_filters('wc_aelia_cs_ecb_convert_xml_rates_flags', LIBXML_NOERROR | LIBXML_NOWARNING));
 		}
 		catch(Exception $e) {
 			$this->add_error(self::ERR_EXCEPTION_OCCURRED,

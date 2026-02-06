@@ -7,12 +7,12 @@ use \Exception;
 /**
  * Retrieves the exchange rates from the Danish National Bank.
  *
- * @link http://www.nationalbanken.dk/en/statistics/exchange_rates/Pages/default.aspx
- * @link http://www.nationalbanken.dk/_vti_bin/DN/DataService.svc/CurrencyRatesXML?lang=en
+ * @link https://www.nationalbanken.dk/en/statistics/exchange_rates/Pages/default.aspx
+ * @link https://www.nationalbanken.dk/_vti_bin/DN/DataService.svc/CurrencyRatesXML?lang=en
  */
 class Exchange_Rates_DNB_Model extends \Aelia\WC\ExchangeRatesModel {
 	// @var string The URL template to use to query DNB
-	private $dnb_api_rates_url = 'http://www.nationalbanken.dk/_vti_bin/DN/DataService.svc/CurrencyRatesXML?lang=en';
+	private $dnb_api_rates_url = 'https://www.nationalbanken.dk/_vti_bin/DN/DataService.svc/CurrencyRatesXML?lang=en';
 
 	/**
 	 * Tranforms the exchange rates received from DNB into an array of
@@ -47,28 +47,23 @@ class Exchange_Rates_DNB_Model extends \Aelia\WC\ExchangeRatesModel {
 	 */
 	private function fetch_all_rates() {
 		try {
-			$response = \Httpful\Request::get($this->dnb_api_rates_url)
-				->expectsXml()
-				->send();
+			// Fetch the exchange rates using WP functions
+			// @since 2.1.26.251024
+			$response = wp_remote_get(esc_url_raw(apply_filters('wc_aelia_cs_dnb_fetch_rates_request_url', $this->dnb_api_rates_url)));
 
-			// Debug
-			//var_dump("DNB RATES RESPONSE:", $response); die();
-			if($response->hasErrors()) {
-				// OpenExchangeRates sends error details in response body
-				if($response->hasBody()) {
-					$response_data = $response->body;
-
-					$this->add_error(self::ERR_ERROR_RETURNED,
-													 sprintf(__('Error returned by DNB. ' .
-																			'Error code: %s. Error message: %s - %s.',
-																			Definitions::TEXT_DOMAIN),
-																	 $response_data->status,
-																	 $response_data->message,
-																	 $response_data->description));
-				}
+			if(is_wp_error($response)) {
+				$this->add_error(self::ERR_ERROR_RETURNED,
+												 sprintf(__('Error returned by the Danish Bank service. Error code: %1$s. Error message: %2$s.', Definitions::TEXT_DOMAIN),
+																 $response->get_error_code(),
+																 $response->get_error_message())
+				);
 				return false;
 			}
-			return $response->body;
+
+			// Convert the response to an XML object and return it. The conversion is done with the errors and warnings
+			// hidden by default, because the error handling is already covered
+			// @since 2.1.26.251024
+			return simplexml_load_string($response['body'], 'SimpleXMLElement', apply_filters('wc_aelia_cs_dnb_convert_xml_rates_flags', LIBXML_NOERROR | LIBXML_NOWARNING));
 		}
 		catch(Exception $e) {
 			$this->add_error(self::ERR_EXCEPTION_OCCURRED,

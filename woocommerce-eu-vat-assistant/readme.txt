@@ -5,7 +5,7 @@ Requires at least: 5.0
 Tested up to: 6.8.9
 Tags: woocommerce, vat compliance, tax compliance, digital vat, aelia
 License: GPLv3
-Stable tag: 2.1.24.250806
+Stable tag: 2.1.26.251024
 
 Extends the standard WooCommerce sale process and assists in achieving compliance with the new EU VAT regime starting on the 1st of January 2015.
 
@@ -20,7 +20,7 @@ For more information about the plugin retirement and the recomemnded alternative
 
 We are proud to say that this is [the most powerful **free** EU VAT solution](https://aelia.co/shop/eu-vat-assistant-woocommerce/?src=wp) on the market. **It was designed with you, the merchant, in mind**, and it will make it easier to deal with the new, complex EU VAT regulations. this plugin was developed by [Aelia Team - The WooCommerce internationalisation experts](https://aelia.co).
 
-The WooCommerce EU VAT Assistant is designed to help achieving compliance with the new European VAT regulations, coming into effect on the 1st of January 2015. Starting from that date, digital goods sold to consumers in the European Union are liable to EU VAT, no matter where the seller is located. The VAT rate to apply to each sale is the one charged in the country of consumption, i.e. where the customer  resides. These new rules apply to worldwide sellers, whether resident in the European Union or not, who sell their products to EU customers. For more information: [EU: 2015 Place of Supply Changes - Mini One-Stop-Shop](https://www2.deloitte.com/global/en/pages/tax/articles/eu-2015-place-of-supply-changes-mini-one-stop-shop.html).
+The EU VAT Assistant for WooCommerce is designed to help achieving compliance with the new European VAT regulations, coming into effect on the 1st of January 2015. Starting from that date, digital goods sold to consumers in the European Union are liable to EU VAT, no matter where the seller is located. The VAT rate to apply to each sale is the one charged in the country of consumption, i.e. where the customer  resides. These new rules apply to worldwide sellers, whether resident in the European Union or not, who sell their products to EU customers. For more information: [EU: 2015 Place of Supply Changes - Mini One-Stop-Shop](https://www2.deloitte.com/global/en/pages/tax/articles/eu-2015-place-of-supply-changes-mini-one-stop-shop.html).
 
 = How this plugin will help you =
 
@@ -151,6 +151,15 @@ For more information about installation and management of plugins, please refer 
 10. **Report > EU VAT by Country**. This report shows the totals of VAT applied and refunded at each rate, for both items and shipping, grouped by country. The Export CSV button allows to export the data to a CSV file, which can be easily imported by accounting software.
 
 == Changelog ==
+
+= 2.1.26.251024 =
+* Declared compatibility with WooCommerce 10.3.
+* Tweak - Improved compatibility with PHP 8.x.
+* Tweak - Updated exchange rates providers, removing dependency from Httpful library.
+* Deprecation - Removed Irish Revenue integration. The target service has changed significantly and the integration no longer works.
+
+= 2.1.25.250918 =
+* Declared compatibility with WooCommerce 10.2.
 
 = 2.1.24.250806 =
 * Declared compatibility with WooCommerce 10.1.
