@@ -19,7 +19,7 @@ class Invalid_Shortcode_Exception extends \Exception {
 	 * @param integer $code
 	 * @param Exception $previous
 	 */
-	public function __construct($message, $code = Definitions::ERR_SHORTCODE_NOT_VALID, \Exception $previous = null) {
+	public function __construct($message, $code = Definitions::ERR_SHORTCODE_NOT_VALID, ?\Exception $previous = null) {
 		$message = $message ?: __('Shortcode not implemented.', Definitions::TEXT_DOMAIN);
 		parent::__construct($message, $code, $previous);
 	}

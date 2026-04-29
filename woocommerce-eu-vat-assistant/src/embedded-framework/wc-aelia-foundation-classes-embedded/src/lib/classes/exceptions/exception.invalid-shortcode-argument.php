@@ -18,7 +18,7 @@ class Invalid_Shortcode_Argument_Exception extends \InvalidArgumentException {
 	 * @param integer $code
 	 * @param Exception $previous
 	 */
-	public function __construct($message, $code = Definitions::ERR_SHORTCODE_INVALID_ARGUMENTS, \Exception $previous = null) {
+	public function __construct($message, $code = Definitions::ERR_SHORTCODE_INVALID_ARGUMENTS, ?\Exception $previous = null) {
 		$message = $message ?: __('Invalid shortcode argument.', Definitions::TEXT_DOMAIN);
 		parent::__construct($message, $code, $previous);
 	}

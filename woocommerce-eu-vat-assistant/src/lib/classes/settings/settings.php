@@ -3,6 +3,7 @@ namespace Aelia\WC\EU_VAT_Assistant;
 if(!defined('ABSPATH')) { exit; } // Exit if accessed directly
 
 use \Exception;
+use ParagonIE\Sodium\Core\Curve25519\Ge\P2;
 use \stdClass;
 
 /**
@@ -412,7 +413,7 @@ class Settings extends \Aelia\WC\Settings {
 	 * @return \Aelia\WC\ExchangeRatesModel.
 	 */
 	protected function get_exchange_rates_model_instance($key,
-																											 array $settings = null,
+																											 ?array $settings = null,
 																											 $default_class = self::DEFAULT_EXCHANGE_RATES_PROVIDER) {
 		$model_info = get_value($key, $this->_exchange_rates_models);
 		$model_class = get_value('class_name', $model_info, $default_class);
@@ -547,15 +548,20 @@ class Settings extends \Aelia\WC\Settings {
 	 */
 	public function __construct($settings_key = self::SETTINGS_KEY,
 															$textdomain = '',
-															\Aelia\WC\Settings_Renderer $renderer = null) {
+															?\Aelia\WC\Settings_Renderer $renderer = null) {
 		if(empty($renderer)) {
 			// Instantiate the render to be used to generate the settings page
 			$renderer = new \Aelia\WC\Settings_Renderer();
 		}
 		parent::__construct($settings_key, $textdomain, $renderer);
 
-		// Register available exchange rates models
-		$this->register_exchange_rates_models();
+		// Register available exchange rates models after the "init" event,
+		// to prevent WordPress from raising the usual warning about translation
+		// functions being called too early.
+		// @since 2.1.27.251210
+		add_action('init', function() {
+			$this->register_exchange_rates_models();
+		});
 
 		add_action('admin_init', array($this, 'init_settings'));
 

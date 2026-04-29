@@ -18,7 +18,7 @@ use \InvalidArgumentException;
  * EU VAT Assistant plugin.
  */
 class WC_Aelia_EU_VAT_Assistant extends Aelia_Plugin {
-	public static $version = '2.1.26.251024';
+	public static $version = '2.1.30.260413';
 
 	public static $plugin_slug = Definitions::PLUGIN_SLUG;
 	public static $text_domain = Definitions::TEXT_DOMAIN;

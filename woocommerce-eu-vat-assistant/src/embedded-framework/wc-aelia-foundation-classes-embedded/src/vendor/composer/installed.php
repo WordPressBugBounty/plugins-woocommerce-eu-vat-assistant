@@ -3,7 +3,7 @@
         'name' => 'aelia/wc-aelia-foundation-classes',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '1febcb6abe241e77fc6844c566e2bf1e8fef577f',
+        'reference' => '644c63e255fe93b1b2d5994f51eb80c1a8c4cbd6',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'aelia/wc-aelia-foundation-classes' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '1febcb6abe241e77fc6844c566e2bf1e8fef577f',
+            'reference' => '644c63e255fe93b1b2d5994f51eb80c1a8c4cbd6',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -87,15 +87,6 @@
             'provided' => array(
                 0 => '1.0.0',
             ),
-        ),
-        'yahnis-elsts/plugin-update-checker' => array(
-            'pretty_version' => 'v5.6',
-            'version' => '5.6.0.0',
-            'reference' => 'a2db6871deec989a74e1f90fafc6d58ae526a879',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../yahnis-elsts/plugin-update-checker',
-            'aliases' => array(),
-            'dev_requirement' => false,
         ),
     ),
 );

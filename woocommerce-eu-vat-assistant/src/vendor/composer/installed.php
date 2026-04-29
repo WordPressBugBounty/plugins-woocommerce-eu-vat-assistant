@@ -3,7 +3,7 @@
         'name' => 'aelia/wc-aelia-eu-vat-assistant',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '1228a3ec27b5d2ac34788c2ce6eb7e0105e89f05',
+        'reference' => '75adf1ed75c8a716c5dede6591de4c0d0dac9832',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'aelia/wc-aelia-eu-vat-assistant' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '1228a3ec27b5d2ac34788c2ce6eb7e0105e89f05',
+            'reference' => '75adf1ed75c8a716c5dede6591de4c0d0dac9832',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

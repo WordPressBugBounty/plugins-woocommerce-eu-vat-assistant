@@ -4,7 +4,6 @@
 		"geoip2/geoip2": "^2.13",
 		"maxmind-db/reader": "1.*",
 		"maxmind/web-service-common": "0.9",
-		"yahnis-elsts/plugin-update-checker": "5.*",
 		"monolog/monolog": "^1.2",
 		"freemius/wordpress-sdk": "2.12.0"
   },
