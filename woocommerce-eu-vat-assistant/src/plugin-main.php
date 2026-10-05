@@ -18,7 +18,7 @@ use \InvalidArgumentException;
  * EU VAT Assistant plugin.
  */
 class WC_Aelia_EU_VAT_Assistant extends Aelia_Plugin {
-	public static $version = '2.1.30.260413';
+	public static $version = '2.2.0.261001';
 
 	public static $plugin_slug = Definitions::PLUGIN_SLUG;
 	public static $text_domain = Definitions::TEXT_DOMAIN;
@@ -1652,7 +1652,8 @@ class WC_Aelia_EU_VAT_Assistant extends Aelia_Plugin {
 			}
 		}
 
-		$vat_number = get_value(Definitions::ARG_VAT_NUMBER, $_POST, '');
+		$vat_number = preg_replace("/[^a-zA-Z0-9]+/", '', wc_clean($_POST[Definitions::ARG_VAT_NUMBER] ?? ''));
+
 		// Check if customer is VAT exempt and set his exemption accordingly
 		$exemption_check_result = $this->set_customer_vat_exemption($customer_country, $vat_number);
 

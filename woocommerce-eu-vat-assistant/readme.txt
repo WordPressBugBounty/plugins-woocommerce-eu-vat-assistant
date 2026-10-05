@@ -2,10 +2,10 @@
 Contributors: daigo75
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LVSZCS2SABN7Y
 Requires at least: 5.0
-Tested up to: 7.0.9
+Tested up to: 7.1.9
 Tags: woocommerce, vat compliance, tax compliance, digital vat, aelia
 License: GPLv3
-Stable tag: 2.1.30.260413
+Stable tag: 2.2.0.261001
 
 Extends the standard WooCommerce sale process and assists in achieving compliance with the new EU VAT regime starting on the 1st of January 2015.
 
@@ -151,6 +151,24 @@ For more information about installation and management of plugins, please refer 
 10. **Report > EU VAT by Country**. This report shows the totals of VAT applied and refunded at each rate, for both items and shipping, grouped by country. The Export CSV button allows to export the data to a CSV file, which can be easily imported by accounting software.
 
 == Changelog ==
+
+= 2.2.0.261001 =
+* Fix - Fixed vulnerability disclosed in CVE-2026-103899.
+
+= 2.1.35.260902 =
+* Declared compatibility with WooCommerce 11.1.
+
+= 2.1.34.260811 =
+* Declared compatibility with WordPress 7.1.9.
+
+= 2.1.33.260806 =
+* Declared compatibility with WooCommerce 11.0.
+
+= 2.1.32.260624 =
+* Declared compatibility with WooCommerce 10.9.
+
+= 2.1.31.260518 =
+* Declared compatibility with WooCommerce 10.8.
 
 = 2.1.30.260413 =
 * Declared compatibility with WooCommerce 10.7.

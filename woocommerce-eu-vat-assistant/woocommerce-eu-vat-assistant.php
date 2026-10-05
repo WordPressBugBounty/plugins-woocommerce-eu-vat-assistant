@@ -5,11 +5,11 @@ Plugin URI: https://aelia.co/shop/eu-vat-assistant-woocommerce/
 Description: Assists with EU VAT compliance, for the new VAT regime beginning 1st January 2015.
 Author: Aelia
 Author URI: https://aelia.co
-Version: 2.1.30.260413
+Version: 2.2.0.261001
 Text Domain: woocommerce-eu-vat-assistant
 Domain Path: /languages
 WC requires at least: 3.5
-WC tested up to: 10.7
+WC tested up to: 11.1
 Requires at least: 5.0
 Requires PHP: 7.1
 License: GPLv3 (https://www.gnu.org/licenses/gpl-3.0.html)

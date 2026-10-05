@@ -5,7 +5,7 @@ Tags: woocommerce, utility, framework, aelia
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Requires at least: 5.0
-Tested up to: 7.0.9
+Tested up to: 7.1.9
 
 Adds a set of classes that can simplify the development of other plugins for WooCommerce.
 
@@ -67,6 +67,16 @@ Should you have any question about this product, please feel free to [contact us
 For more information about installation and management of plugins, please refer to [WordPress documentation](https://codex.wordpress.org/Managing_Plugins#Installing_Plugins).
 
 == Changelog ==
+
+= 2.6.18.260902 =
+* Declared compatibility with WooCommerce 11.1.
+* Declared compatibility with WordPress 7.1.9.
+
+= 2.6.17.260629 =
+* Declared compatibility with WooCommerce 10.9.
+
+= 2.6.16.260518 =
+* Declared compatibility with WooCommerce 10.8.
 
 = 2.6.15.260413 =
 * Declared compatibility with WooCommerce 10.7.

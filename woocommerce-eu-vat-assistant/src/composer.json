@@ -1,7 +1,7 @@
 {
 	"name": "aelia/wc-aelia-eu-vat-assistant",
 	"require": {
-		"econea/nusoap": "0.9.7"
+		"econea/nusoap": "0.9.20"
 	},
 	"require-dev": {
 		"mockery/mockery": "^1.3"

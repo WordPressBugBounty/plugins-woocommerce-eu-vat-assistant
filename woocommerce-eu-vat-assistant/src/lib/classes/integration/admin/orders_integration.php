@@ -169,9 +169,9 @@ class Orders_Integration extends \Aelia\WC\Base_Class {
 		$order = wc_get_order( $order_id );
 
 		if(isset($_POST['vat_number'])) {
-			$order->update_meta_data('vat_number', wc_clean($_POST['vat_number']));
+			$order->update_meta_data('vat_number', preg_replace("/[^a-zA-Z0-9]+/", '', wc_clean($_POST['vat_number'])));
 		}
-		$order->save();
+		$order->save_meta_data();
 	}
 
 	/**
@@ -234,8 +234,8 @@ class Orders_Integration extends \Aelia\WC\Base_Class {
 						}
 					?>
 					<tr>
-						<td class="label"><?php echo $label_text; ?></td>
-						<td class="value"><?php echo $vat_evidence[$evidence_key]; ?></td>
+						<td class="label"><?php echo esc_html($label_text); ?></td>
+						<td class="value"><?php echo esc_html($vat_evidence[$evidence_key]); ?></td>
 					</tr>
 				<?php } ?>
 			</tbody>
@@ -257,7 +257,7 @@ class Orders_Integration extends \Aelia\WC\Base_Class {
 		}
 		$exchange_rate = $vat_info['vat_currency_exchange_rate'];
 		?>
-		<h4 class="subtitle"><?php echo get_value('title', $vat_info, ''); ?></h4>
+		<h4 class="subtitle"><?php echo $vat_info['title'] ?? ''; ?></h4>
 		<table>
 			<thead>
 				<tr>
